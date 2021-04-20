@@ -1,7 +1,12 @@
 import Head from 'next/head'
+import Header from '../components/Header';
 
 export default function Home() {
-  return (
-    <h1>Hello!</h1>
-  )
+	return (
+		<div
+			className='h-screen bg-gray-200'
+		>
+			<Header />
+		</div>
+	)
 }
