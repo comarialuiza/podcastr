@@ -12,7 +12,7 @@ function Header() {
             bg-white
             px-8 py-16 h-24
             flex items-center
-            border-b-8 border-gray-300
+            border-b-8 border-yellow-400
         '>
             <Image src='/logo.svg' alt='Podcastr' width={ 163 } height={ 40 }/>
 
