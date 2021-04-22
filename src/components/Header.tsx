@@ -1,6 +1,6 @@
-import Image from 'next/image';
 import format from 'date-fns/format';
 import ptBR from 'date-fns/locale/pt-BR';
+import Image from 'next/image';
 
 function Header() {
     const currentDate = format(new Date(), 'EEEEEE, d MMMM', {
@@ -10,7 +10,7 @@ function Header() {
     return (
         <header className='
             bg-white
-            px-8 py-16 h-24
+            p-16 h-24
             flex items-center
             border-b-8 border-yellow-400
         '>

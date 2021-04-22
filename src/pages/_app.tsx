@@ -1,4 +1,5 @@
 import '../../styles/index.css';
+import '../../styles/unreset.scss';
 import Header from '../components/Header';
 import Player from '../components/Player';
 

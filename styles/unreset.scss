@@ -1,0 +1,11 @@
+.paragraph {
+    p {
+        @apply my-4;
+        @apply text-sm;
+        @apply text-justify;
+    }
+}
+
+.transform-translate {
+    transform: translate(-50%, -50%);
+}

@@ -38,11 +38,11 @@ function Player() {
         '>
             <header className='flex items-center gap-8'>
                 <Image src='/playing.svg' alt='Tocando agora' width={ 50 } height={ 50 }/>
-                <strong>Tocando agora</strong>
+                <strong className='font-serif'>Tocando agora</strong>
             </header>
 
             <div className='w-full h-80 rounded-2xl bg-opacity-20 bg-white flex items-center justify-center p-8 '>
-                <p className='text-2xl text-center'>Selecione um podcast para ouvir</p>
+                <p className='text-2xl text-center font-serif'>Selecione um podcast para ouvir</p>
             </div>
 
             <footer className='self-stretch w-full'>
