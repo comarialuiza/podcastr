@@ -1,6 +1,12 @@
 import Image from 'next/image';
+import { useContext } from 'react';
+import PlayerContext from '../contexts/playerContext';
 
 function Player() {
+    const { episodeList, currentEpisodeIndex } = useContext(PlayerContext);
+
+    const episode = episodeList[currentEpisodeIndex];
+
     const getPlayerTime = (time: string) => (
         <span className='text-center'>{ time }</span>
     );
@@ -38,7 +44,7 @@ function Player() {
         '>
             <header className='flex items-center gap-8'>
                 <Image src='/playing.svg' alt='Tocando agora' width={ 50 } height={ 50 }/>
-                <strong className='font-serif'>Tocando agora</strong>
+                <strong className='font-serif text-sm'>Tocando agora</strong>
             </header>
 
             <div className='w-full h-80 rounded-2xl bg-opacity-20 bg-white flex items-center justify-center p-8 '>

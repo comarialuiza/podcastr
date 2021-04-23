@@ -32,7 +32,7 @@ const Episode = ({ episode }: EpisodeProps) => {
                 <Link href='/'>
                     <button
                         type='button'
-                        className='absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-purple-400 z-10 p-2 rounded'
+                        className='absolute left-0 top-1/2 bg-purple-400 z-10 p-2 rounded'
                         style={{ fontSize: 0, transform: 'translate(-50%, -50%)' }}
                     >
                         <Image src='/arrow-left.svg' alt='Voltar' width={ 20 } height={ 20 } />
