@@ -1,9 +1,9 @@
+import 'rc-slider/assets/index.css';
+
 import Image from 'next/image';
+import Slider from 'rc-slider';
 import { useContext, useEffect, useRef } from 'react';
 import PlayerContext from '../contexts/playerContext';
-import Slider from 'rc-slider';
-
-import 'rc-slider/assets/index.css';
 
 function Player() {
     const {
@@ -50,7 +50,7 @@ function Player() {
         </div>
     ) : (
         <div className='w-full h-80 rounded-2xl bg-opacity-20 bg-white flex items-center justify-center p-8 '>
-            <p className='text-2xl text-center font-serif'>Selecione um podcast para ouvir</p>
+            <p className='text-2xl text-center '>Selecione um podcast para ouvir</p>
         </div>
     )
 
@@ -130,7 +130,7 @@ function Player() {
         '>
             <header className='flex items-center gap-8'>
                 <Image src='/playing.svg' alt='Tocando agora' width={ 50 } height={ 50 }/>
-                <strong className='font-serif text-sm'>Tocando agora</strong>
+                <strong className=' text-sm'>Tocando agora</strong>
             </header>
 
             { podcastInfo }

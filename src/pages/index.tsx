@@ -30,7 +30,7 @@ const Home = ({
 	const { play } = useContext(PlayerContext);
 
 	const getTd = (content: string | number, className?: string) => (
-		<td className={ `p-2 text-gray-600 text-sm font-serif ${ className }` }>{ content }</td>
+		<td className={ `p-2 text-gray-600 text-sm  ${ className }` }>{ content }</td>
 	);
 
 	const getTh = (content: string, className?: string) => (
@@ -58,9 +58,9 @@ const Home = ({
 
 				<div className='ml-4' style={{ width: 'calc(100% - 8rem)' }}>
 					<Link href={ `/episodes/${ episode.id }` }>
-						<a className='text-base h-12 mb-2 block overflow-hidden font-serif'>{ episode.title }</a>
+						<a className='text-base h-12 mb-2 block overflow-hidden '>{ episode.title }</a>
 					</Link>
-					<p className='text-sm text-gray-400 whitespace-nowrap overflow-ellipsis overflow-hidden font-serif' style={{ width: '90%' }}>{ episode.members }</p>
+					<p className='text-sm text-gray-400 whitespace-nowrap overflow-ellipsis overflow-hidden ' style={{ width: '90%' }}>{ episode.members }</p>
 					<span className='mr-2 text-xs text-gray-400'>{ episode.publishedAt }</span>
 					<span className='text-xs text-gray-400'>{ episode.duration }</span>
 
@@ -95,7 +95,7 @@ const Home = ({
 					/>
 				</td>
 
-				<td className='p-2 text-gray-600 text-sm font-serif'>
+				<td className='p-2 text-gray-600 text-sm '>
 					<Link href={ `/episodes/${ episode.id }` }>
 						<a>{ episode.title }</a>
 					</Link>
@@ -121,7 +121,7 @@ const Home = ({
 	return (
 		<div className='p-16 overflow-scroll' style={{ height: 'calc(100% - 136px)' }}>
 			<section>
-				<h2 className='mb-4 font-serif'>Últimos lançamentos</h2>
+				<h2 className='mb-4 '>Últimos lançamentos</h2>
 
 				<ul className='grid gap-4 grid-cols-2'>
 					{ latestEpisodes }
@@ -129,7 +129,7 @@ const Home = ({
 			</section>
 
 			<section className='mt-12'>
-				<h2 className='mb-4 font-serif'>Todos os episódios</h2>
+				<h2 className='mb-4 '>Todos os episódios</h2>
 
 				<table cellSpacing={ 0 } className='table-auto'>
 					<thead>

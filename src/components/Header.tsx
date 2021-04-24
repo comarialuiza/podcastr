@@ -16,11 +16,11 @@ function Header() {
         '>
             <Image src='/logo.svg' alt='Podcastr' width={ 163 } height={ 40 }/>
 
-            <p className='font-serif text-gray-700 text-sm px-10 mx-10 border-l-2'>
+            <p className=' text-gray-700 text-sm px-10 mx-10 border-l-2'>
                 O melhor para você ouvir sempre
             </p>
 
-            <span className='font-serif ml-auto text-sm capitalize'>{ currentDate }</span>
+            <span className=' ml-auto text-sm capitalize'>{ currentDate }</span>
         </header>
     );
 }
