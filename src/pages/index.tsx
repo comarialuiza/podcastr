@@ -3,10 +3,11 @@ import ptBR from 'date-fns/locale/pt-BR';
 import { GetStaticProps } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useContext } from 'react';
-import PlayerContext from '../contexts/playerContext';
+import { useEffect } from 'react';
+import { usePlayer } from '../contexts/playerContext';
 import { api } from '../services/api';
 import { convertDurationToTimeString } from '../utils/convertDurationToTimeString';
+import Head from 'next/head';
 
 interface Episode {
 	id: string;
@@ -15,6 +16,7 @@ interface Episode {
 	members: string;
 	publishedAt: string;
 	duration: number;
+	durationAsString: string;
 	url: string;
 }
 
@@ -27,7 +29,13 @@ const Home = ({
 	latestEpisodes: latestEpisodesData,
 	allEpisodes: allEpisodesData
 }: HomeProps) => {
-	const { play } = useContext(PlayerContext);
+	const { playList, currentEpisodeIndex } = usePlayer();
+
+	useEffect(() => {
+		console.log(latestEpisodesData.length);
+	}, [currentEpisodeIndex]);
+
+	const episodeList = [...latestEpisodesData, ...allEpisodesData];
 
 	const getTd = (content: string | number, className?: string) => (
 		<td className={ `p-2 text-gray-600 text-sm  ${ className }` }>{ content }</td>
@@ -37,89 +45,81 @@ const Home = ({
 		<th className={ `p-2 uppercase text-xs font-light text-gray-500 ${ className }` }>{ content }</th>
 	);
 
-	const latestEpisodes = latestEpisodesData.map((episode: Episode) => {
-		const playEpisode = (episode: Episode) => {
-			play(episode);
-		}
+	const latestEpisodes = latestEpisodesData.map((episode: Episode, index: number) => (
+		<li
+			key={ episode.id }
+			className='bg-white p-4 rounded flex items-center relative'
+		>
+			<Image
+				src={ episode.thumbnail }
+				alt={ episode.title }
+				width={ 100 }
+				height={ 100 }
+				objectFit='cover'
+				className='rounded flex-shrink-0 w-24 h-24'
+			/>
 
-		return (
-			<li
-				key={ episode.id }
-				className='bg-white p-4 rounded flex items-center relative'
-			>
+			<div className='ml-4' style={{ width: 'calc(100% - 8rem)' }}>
+				<Link href={ `/episodes/${ episode.id }` }>
+					<a className='text-base h-12 mb-2 block overflow-hidden '>{ episode.title }</a>
+				</Link>
+				<p className='text-sm text-gray-400 whitespace-nowrap overflow-ellipsis overflow-hidden ' style={{ width: '90%' }}>{ episode.members }</p>
+				<span className='mr-2 text-xs text-gray-400'>{ episode.publishedAt }</span>
+				<span className='text-xs text-gray-400'>{ episode.durationAsString }</span>
+
+				<button
+					type='button'
+					className='absolute -bottom-2 -right-2 bg-purple-200 p-2 rounded'
+					style={{ fontSize: 0 }}
+					onClick={ () => playList(episodeList, index) }
+				>
+					<Image src='/play-green.svg' alt='Tocar episódio' width={ 25 } height={ 25 } />
+				</button>
+			</div>
+		</li>
+	));
+
+	const allEpisodes = allEpisodesData.map((episode: Episode, index: number) => (
+		<tr key={ episode.id }>
+			<td className='p-2'>
 				<Image
+					width={ 120 }
+					height={ 120 }
 					src={ episode.thumbnail }
 					alt={ episode.title }
-					width={ 100 }
-					height={ 100 }
 					objectFit='cover'
-					className='rounded flex-shrink-0 w-24 h-24'
+					className='w-4 h-4 rounded'
 				/>
+			</td>
 
-				<div className='ml-4' style={{ width: 'calc(100% - 8rem)' }}>
-					<Link href={ `/episodes/${ episode.id }` }>
-						<a className='text-base h-12 mb-2 block overflow-hidden '>{ episode.title }</a>
-					</Link>
-					<p className='text-sm text-gray-400 whitespace-nowrap overflow-ellipsis overflow-hidden ' style={{ width: '90%' }}>{ episode.members }</p>
-					<span className='mr-2 text-xs text-gray-400'>{ episode.publishedAt }</span>
-					<span className='text-xs text-gray-400'>{ episode.duration }</span>
+			<td className='p-2 text-gray-600 text-sm '>
+				<Link href={ `/episodes/${ episode.id }` }>
+					<a>{ episode.title }</a>
+				</Link>
+			</td>
+			{ getTd(episode.members) }
+			{ getTd(episode.publishedAt, 'whitespace-nowrap text-center') }
+			{ getTd(episode.durationAsString, 'whitespace-nowrap text-center') }
 
-					<button
-						type='button'
-						className='absolute -bottom-2 -right-2 bg-purple-200 p-2 rounded'
-						style={{ fontSize: 0 }}
-						onClick={ () => play(episode) }
-					>
-						<Image src='/play-green.svg' alt='Tocar episódio' width={ 25 } height={ 25 } />
-					</button>
-				</div>
-			</li>
-		);
-	});
-
-	const allEpisodes = allEpisodesData.map((episode: Episode) => {
-		const playEpisode = (episode: Episode) => {
-			play(episode);
-		}
-
-		return (
-			<tr key={ episode.id }>
-				<td className='p-2'>
-					<Image
-						width={ 120 }
-						height={ 120 }
-						src={ episode.thumbnail }
-						alt={ episode.title }
-						objectFit='cover'
-						className='w-4 h-4 rounded'
-					/>
-				</td>
-
-				<td className='p-2 text-gray-600 text-sm '>
-					<Link href={ `/episodes/${ episode.id }` }>
-						<a>{ episode.title }</a>
-					</Link>
-				</td>
-				{ getTd(episode.members) }
-				{ getTd(episode.publishedAt, 'whitespace-nowrap text-center') }
-				{ getTd(episode.duration, 'whitespace-nowrap text-center') }
-
-				<td className='p-2 w-12 h-12'>
-					<button
-						type='button'
-						className='bg-purple-400 bg-opacity-20 p-2 rounded'
-						style={{ fontSize: 0 }}
-						onClick={ () => play(episode) }
-					>
-						<Image src='/play-green.svg' alt='Tocar episódio' width={ 20 } height={ 20 } className='w-8 h-8'/>
-					</button>
-				</td>
-			</tr>
-		)
-	});
+			<td className='p-2 w-12 h-12'>
+				<button
+					type='button'
+					className='bg-purple-400 bg-opacity-20 p-2 rounded'
+					style={{ fontSize: 0 }}
+					onClick={ () => playList(episodeList, latestEpisodesData.length + index) }
+				>
+					<Image src='/play-green.svg' alt='Tocar episódio' width={ 20 } height={ 20 } className='w-8 h-8'/>
+				</button>
+			</td>
+		</tr>
+	));
 
 	return (
 		<div className='p-16 overflow-scroll' style={{ height: 'calc(100% - 136px)' }}>
+			<Head>
+				<title>Home | Podcastr</title>
+			</Head>
+
 			<section>
 				<h2 className='mb-4 '>Últimos lançamentos</h2>
 
@@ -168,7 +168,8 @@ export const getStaticProps: GetStaticProps = async () =>  {
 			thumbnail: episode.thumbnail,
 			members: episode.members,
 			publishedAt: format(parseISO(episode.published_at), 'd MMM yy', { locale: ptBR }),
-			duration: convertDurationToTimeString(episode.file.duration),
+			duration: episode.file.duration,
+			durationAsString: convertDurationToTimeString(episode.file.duration),
 			url: episode.file.url
 		}
 	});

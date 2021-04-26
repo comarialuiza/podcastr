@@ -1,9 +1,10 @@
-import 'rc-slider/assets/index.css';
-
 import Image from 'next/image';
 import Slider from 'rc-slider';
-import { useContext, useEffect, useRef } from 'react';
-import PlayerContext from '../contexts/playerContext';
+import 'rc-slider/assets/index.css';
+import { useEffect, useRef, useState } from 'react';
+import { usePlayer } from '../contexts/playerContext';
+import { convertDurationToTimeString } from '../utils/convertDurationToTimeString';
+
 
 function Player() {
     const {
@@ -11,8 +12,19 @@ function Player() {
         currentEpisodeIndex,
         isPlaying,
         togglePlay,
-        setPlayingState
-    } = useContext(PlayerContext);
+        setPlayingState,
+        playNext,
+        playPrevious,
+        hasNext,
+        hasPrevious,
+        isLooping,
+        toggleLoop,
+        isShuffling,
+        toggleShuffle,
+        clearPlayerState
+    } = usePlayer();
+
+    const [progress, setProgress] = useState(0);
 
     const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -26,14 +38,35 @@ function Player() {
         isPlaying ? audio.play() : audio.pause();
     }, [isPlaying]);
 
+    const setupProgressListener = () => {
+        audioRef.current.currentTime = 0;
+
+        audioRef.current.addEventListener('timeupdate', () => {
+            setProgress(Math.floor(audioRef.current.currentTime));
+        })
+    }
+
+    const handleEpisodeEnded = () => {
+        if (hasNext) {
+            playNext();
+        } else {
+            clearPlayerState();
+        }
+    }
+
+    const handleSeek = (amount: number) => {
+        audioRef.current.currentTime = amount;
+        setProgress(amount);
+    }
+
     const episode = episodeList[currentEpisodeIndex];
 
-    const getPlayerTime = (time: string) => (
+    const getPlayerTime = (time: string | number) => (
         <span className='text-center'>{ time }</span>
     );
 
-    const playerTimeStart = getPlayerTime('00:00');
-    const playerTimeEnd = getPlayerTime('00:00');
+    const playerTimeStart = getPlayerTime(convertDurationToTimeString(progress));
+    const playerTimeEnd = getPlayerTime(convertDurationToTimeString(episode?.duration ?? 0));
 
     const podcastInfo = episode ? (
         <div className='text-center'>
@@ -53,25 +86,26 @@ function Player() {
             <p className='text-2xl text-center '>Selecione um podcast para ouvir</p>
         </div>
     )
-
-    const disableButton = !episode;
     
     const getButton = (
         image: string,
         alt: string,
-        isMainButton: boolean = false,
-        onClick?: () => void
+        onClick?: () => void,
+        disabled?: boolean,
+        isMainButton: boolean = false
     ) => {
         const buttonClasses = isMainButton ?
             'w-16 h-16 bg-purple-400 rounded bg-opacity-40 disabled:opacity-50 disabled:cursor-not-allowed' :
             'disabled:opacity-50 disabled:cursor-not-allowed';
 
+        const disabledButton = !episode || disabled;
+
         return (
             <button
                 type='button'
                 className={ buttonClasses }
-                style={{ fontSize: 0 }}
-                disabled={ disableButton }
+                style={{ fontSize: 0, backgroundColor: disabledButton ? 'red' : 'blue' }}
+                disabled={ disabledButton }
                 onClick={ onClick }
             >
                 <Image
@@ -84,18 +118,19 @@ function Player() {
         );
     };
 
-    const shuffleButton = getButton('shuffle', 'Embaralhar');
-    const previousButton = getButton('play-previous', 'Tocar anterior');
-    const nextButton = getButton('play-next', 'Tocar próxima');
-    const repeatButton = getButton('repeat', 'Repetir');
-
-    let playButton = getButton('play', 'Tocar', true, togglePlay);
+    const shuffleButton = getButton('shuffle', 'Embaralhar', toggleShuffle, episodeList.length === 1);
+    const previousButton = getButton('play-previous', 'Tocar anterior', playPrevious, !hasPrevious);
+    const nextButton = getButton('play-next', 'Tocar próxima', playNext, hasNext);
+    const repeatButton = getButton('repeat', 'Repetir', toggleLoop, episodeList.length === 1);
 
     const slider = episode ? (
         <Slider
             trackStyle={{ backgroundColor: '#f8c045' }}
             railStyle={{ backgroundColor: '#9f75ff'}}
             handleStyle={{ borderColor: '#f8c045'}}
+            max={ episode.duration }
+            value={ progress }
+            onChange={ handleSeek }
         />
     ) : (
         <div className='w-full h-1 bg-purple-400 rounded'/>
@@ -111,13 +146,16 @@ function Player() {
             ref={ audioRef }
             onPlay={ onPlay }
             onPause={ onPause }
+            loop={ isLooping }
+            onLoadedMetadata={ setupProgressListener }
+            onEnded={ handleEpisodeEnded }
         />
     ) : null;
 
-    const playingButton = isPlaying ? (
-        playButton = getButton('pause', 'Tocar', true, togglePlay)
+    const playButton = isPlaying ? (
+        getButton('pause', 'Tocar', togglePlay, false, true)
     ) : (
-        playButton = getButton('play', 'Tocar', true, togglePlay)
+        getButton('play', 'Tocar', togglePlay, false, true)
     );
 
     return (
@@ -147,7 +185,7 @@ function Player() {
                 <div className='flex items-center justify-center mt-10 gap-6'>
                     { shuffleButton }
                     { previousButton }
-                    { playingButton }
+                    { playButton }
                     { nextButton }
                     { repeatButton }
                 </div>

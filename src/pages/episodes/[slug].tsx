@@ -1,19 +1,21 @@
 import { format, parseISO } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import { GetStaticPaths, GetStaticProps } from 'next';
-import { useRouter } from 'next/router';
-import { api } from '../../services/api';
-import Link from 'next/link';
-import { convertDurationToTimeString } from '../../utils/convertDurationToTimeString';
 import Image from 'next/image';
+import Link from 'next/link';
+import { usePlayer } from '../../contexts/playerContext';
+import { api } from '../../services/api';
+import { convertDurationToTimeString } from '../../utils/convertDurationToTimeString';
+import Head from 'next/head';
 
 interface Episode {
     id: string;
 	title: string;
 	thumbnail: string;
 	members: string;
-	publishedAt: string;
-    duration: string;
+    publishedAt: string;
+    duration: number;
+    durationAsString: string;
     description: string;
 	url: string;
 }
@@ -23,11 +25,16 @@ interface EpisodeProps {
 }
 
 const Episode = ({ episode }: EpisodeProps) => {
-    const router = useRouter();
-    const slug = router.query.slug;
+    const { play } = usePlayer();
+
+    const playEpisode = () => play(episode);
     
     return (
         <div className='max-w-2xl p-4 mx-auto my-8'>
+            <Head>
+                <title>{ episode.title }</title>
+            </Head>
+
             <div className='relative'>
                 <Link href='/'>
                     <button
@@ -47,15 +54,14 @@ const Episode = ({ episode }: EpisodeProps) => {
                     className='rounded'
                 />
 
-                <Link href='/'>
-                    <button
-                        type='button'
-                        className='absolute right-0 top-1/2 bg-green-400 p-2 rounded'
-                        style={{ fontSize: 0, transform: 'translate(50%, -50%)' }}
-                    >
-                        <Image src='/play.svg' alt='Tocar episódio' width={ 20 } height={ 20 } />
-                    </button>
-                </Link>
+                <button
+                    type='button'
+                    className='absolute right-0 top-1/2 bg-green-400 p-2 rounded'
+                    style={{ fontSize: 0, transform: 'translate(50%, -50%)' }}
+                    onClick={ playEpisode }
+                >
+                    <Image src='/play.svg' alt='Tocar episódio' width={ 20 } height={ 20 } />
+                </button>
             </div>
 
             <header>
@@ -64,7 +70,7 @@ const Episode = ({ episode }: EpisodeProps) => {
                 <div className='space-x-4 my-4 text-sm text-gray-400 divide-solid'>
                     <span>{ episode.members }</span>
                     <span>{ episode.publishedAt }</span>
-                    <span>{ episode.duration }</span>
+                    <span>{ episode.durationAsString }</span>
                 </div>
             </header>
 
